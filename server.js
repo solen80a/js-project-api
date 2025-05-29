@@ -19,15 +19,92 @@ app.get("/", (req, res) => {
     <html>
       <head>
         <title>Happy Thoughts API</title>
+             <style>
+        body {
+          font-family: Arial, sans-serif;
+          padding: 20px;
+          background-color: #f0f8ff;
+         
+        }
+        h1 {
+          color: #2c3e50;
+        }
+        code {
+          background: #eee;
+          padding: 2px 4px;
+          border-radius: 4px;
+        }
+        section {
+          margin-bottom: 20px;        
+        }
+      </style>
       </head>
       <body>
-        <h1>Welcome to the Happy Thoughts API</h1>
-        <p>This is the documentation page.</p>
+        <h1>Welcome to Happy Thoughts API</h1>
+        
+        <p>This is the documentation of Happy thoughts API.</p>
+        <section>
         <h2>Endpoints:</h2>
-        <h3></h3>
-        <p>/messages</p>
-        <p>/messages&liked</p>
-        <p>/messages</p>
+        <h3>GET /messages</h3>
+        <p>Returns a list of all happy thoughts.</p>
+        <h4>Response:</h4>
+        <pre><code>
+        [
+          {
+             "_id": "682c6f0e951f7a0017130022",
+            "message": "Cute monkeys🐒",
+            "hearts": 2,
+            "createdAt": "2025-05-20T12:01:18.308Z",
+            "__v": 0
+          },
+          ...
+        ]
+        </code></pre>
+        <h3>GET /messages?liked</h3>                
+        <p>Returns a list of all happy thoughts with likes, >0.</p>
+        <h4>Response:</h4>
+        <pre><code>
+        [
+          {
+             "_id": "682c6f0e951f7a0017130022",
+            "message": "Cute monkeys🐒",
+            "hearts": 2,
+            "createdAt": "2025-05-20T12:01:18.308Z",
+            "__v": 0
+          },
+          ...
+        ]
+        </code></pre>
+        <h3>GET /messages?messagesfromtoday</h3>                
+        <p>Returns a list of all happy thoughts from today .</p>
+        <h4>Response:</h4>
+        <pre><code>
+        [
+          {
+             "_id": "682c6f0e951f7a0017130022",
+            "message": "Cute monkeys🐒",
+            "hearts": 2,
+            "createdAt": "2025-05-20T12:01:18.308Z",
+            "__v": 0
+          },
+          ...
+        ]
+        </code></pre> 
+        <h3>GET /messages/:id</h3>
+        <p>Returns a specific happy thought by id.</p>
+        <h4>Response:</h4>
+        <pre><code>
+        [
+          {
+             "_id": "682c6f0e951f7a0017130022",
+            "message": "Cute monkeys🐒",
+            "hearts": 2,
+            "createdAt": "2025-05-20T12:01:18.308Z",
+            "__v": 0
+          }
+        ]        
+        </section>
+        
       </body>
     </html>
     `)
@@ -41,16 +118,31 @@ app.get("/", (req, res) => {
 // })
 
 //Show all messages
-//Filter liked messages, /messages&liked
+//Filter liked messages, /messages?liked, 
+//Filter messages from today /messages?messagesfromtoday
 app.get("/messages", (req, res) => {
   const showLiked = req.query.hasOwnProperty("liked");
+  const showMessagesFromToday = req.query.hasOwnProperty("messagesfromtoday")
+  const today = new Date()
+  const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 
-  const filteredMessages = showLiked
-    ? data.filter(item => Number(item.hearts) > 0)
-    : data;
+  let filteredMessages = data   
+  
+    if (showLiked){
+      filteredMessages = filteredMessages.filter(message => message.hearts >0) 
+    } 
+
+    if (showMessagesFromToday){
+      filteredMessages = filteredMessages.filter(message => {
+        const createdAt = new Date(message.createdAt)
+        const messageData = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate())
+
+        return messageData.getTime() === todayDate.getTime()
+      })
+    }  
 
   if (filteredMessages.length === 0) {
-    return res.status(404).json({ error: 'There are no liked messages to show' });
+    return res.status(404).json({ error: 'There are no messages to show' });
   }
 
   res.json(filteredMessages);
