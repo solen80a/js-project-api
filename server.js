@@ -22,7 +22,10 @@ app.use(express.json())
 
 const thoughtSchema = new mongoose.Schema({
   message: String,
-  hearts: Number,
+  hearts: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -105,7 +108,7 @@ app.get("/thoughts/:id", async (req, res) => {
     res.status(200).json({ response: thought})
 
   } catch (error) {
-    res.status(500).json({ error: "Thoughts not found"})
+    res.status(500).json({ error: "Failed to fetch thoughts"})
   }
  
 })
@@ -234,7 +237,26 @@ app.delete("/thoughts/:id", async(req, res) => {
     }
     res.status(200).json({message: `Thought with message: ${thought.message}, was deleted`})
   } catch (error) {
-    res.status(500).json({ error: "Thought id was not found"})
+    res.status(500).json({ error: "Failed to fetch thoughts"})
+  }
+})
+
+//PATCH
+app.patch("/thoughts/:id", async(req, res) => {
+  const { id } = req.params
+  const { newThoughtMessage } = req.body
+  const { newThoughtLike } = req.body
+
+  try{
+    const thought = await Thought.findByIdAndUpdate(id, { message: newThoughtMessage }, { hearts: newThoughtLike }, { new: true }, { runValidators: true })
+
+    if(!thought){
+      return res.status(404).json({ error: "Thought id was not found, could not update" })
+    }
+    res.status(200).json({ message: `Thought was updated`})
+
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch thoughts"})
   }
 })
 
