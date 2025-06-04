@@ -5,6 +5,11 @@ import mongoose from "mongoose"
 
 import data from "./data.json"
 
+//To connect to the DB
+const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/happy-thoughts"
+mongoose.connect(mongoUrl)
+
+
 // Defines the port the app will run on. Defaults to 8080, but can be overridden
 // when starting the server. Example command to overwrite PORT env variable value:
 // PORT=9000 npm start
@@ -14,6 +19,15 @@ const app = express()
 // Add middlewares to enable cors and json body parsing
 app.use(cors())
 app.use(express.json())
+
+const thoughtSchema = new mongoose.Schema({
+  message: String,
+  hearts: Number,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+})
 
 // Start defining your routes here
 // Endpoints with listEndpoints
