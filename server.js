@@ -205,8 +205,7 @@ app.get("/documentation", (req, res) => {
         
       </body>
     </html>
-    `)
-  
+    `)  
 })
 
 //POST
@@ -220,6 +219,22 @@ app.post("/thoughts", async(req, res) => {
 
   } catch (error) {
     res.status(500).json({ error: "Thought could not be created"})
+  }
+})
+
+//DELETE
+app.delete("/thoughts/:id", async(req, res) => {
+  const { id } = req.params
+
+  try{
+    const thought = await Thought.findByIdAndDelete(id)
+
+    if (!thought) {
+      return res.status(404).json({ error: "Thought id was not found, could not deleted" })
+    }
+    res.status(200).json({message: `Thought with message: ${thought.message}, was deleted`})
+  } catch (error) {
+    res.status(500).json({ error: "Thought id was not found"})
   }
 })
 
