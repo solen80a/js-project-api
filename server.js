@@ -53,13 +53,6 @@ app.get("/", (req, res) => {
 
 })
 
-
-//Show all messages first version
-// Show the data in data.json
-// app.get("/messages", (req, res) => {
-//   res.json(data)
-// })
-
 //Endpoint to show all thoughts
 //Filter liked thoughts, thoughts?liked, 
 //Filter thoughts from today thoughts?thoughtsfromtoday
@@ -99,11 +92,6 @@ app.get("/thoughts", async(req, res) => {
   }    
 });
 
-//Show all messages !!Is this not relevant? Should maybe be a qury param instead?!!
-// app.get("/messages", (req, res) => {
-//   res.json(data.map((item) => item.message))   
-// })
-
 //Endpoint to show a single thought id 
 app.get("/thoughts/:id", async (req, res) => {
   const { id } = req.params
@@ -118,16 +106,7 @@ app.get("/thoughts/:id", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: "Thoughts not found"})
   }
-
-  // // be aware! The id that comes from the param is of type string. and in our json it is of type number. You have to turn them into the same type before you can compare them. trun a string to a number by adding + 👇
-  // const thoughtID = data.find((thought) => thought._id === req.params.id)
-
-  // // tiny error handling if we get an id that doesnt exist in our data
-  // if (!thoughtID) {
-  //   return res.status(404).json({ error: 'thought not found' })
-  // }
  
-  // res.json(thoughtID)
 })
 
 
