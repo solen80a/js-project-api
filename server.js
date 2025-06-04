@@ -74,28 +74,35 @@ app.get("/thoughts", async(req, res) => {
 
   const query = {}  
 
-  if (liked){
-    query.hearts = liked
-    filteredThoughts = filteredThoughts.filter(thought => thought.hearts >0)
+  if (liked !== undefined){
+    query.hearts = { $gt: 0 } //greater than 0
+    //filteredThoughts = filteredThoughts.filter(thought => thought.hearts >0)
   }
 
-  if (thoughtsfromtoday){
-    query.createdAt = thoughtsfromtoday
-    filteredThoughts = filteredThoughts.filter(thought => {
-      const createdAt = new Date(thought.createdAt)
-      const thoughtsDate = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate())
+  if (thoughtsfromtoday !== undefined){
+    // query.createdAt = thoughtsfromtoday
+    // filteredThoughts = filteredThoughts.filter(thought => {
+    //   const createdAt = new Date(thought.createdAt)
+    //   const thoughtsDate = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate())
 
-      return thoughtsDate.getTime() === todayDate.getTime()
-    }
-  )}
+    //   return thoughtsDate.getTime() === todayDate.getTime()
+    // })
+    const tomorrowDate = new Date(todayDate);
+    tomorrowDate.setDate(todayDate.getDate() + 1);
+
+    query.createdAt = {
+      $gte: todayDate, //greater than or equal to todayDate
+      $lt: tomorrowDate, //less than tomorrowDate
+    };
+  }
     
   try{
-    let filteredThoughts = await Thought.find(query) 
+    const filteredThoughts = await Thought.find(query) 
 
     if (filteredThoughts.length === 0){
       return res.status(404).json({ error: "There are no thoughts to show" })       
     } 
-    res.status(200).json({ message: "Success"})   
+    res.status(200).json({ response: filteredThoughts })   
 
   } catch (error) {
     res.status(500).json({ message: "Failed to fetch thoughts"})
