@@ -42,6 +42,7 @@ const Thought = mongoose.model("Thought", thoughtSchema)
 //   seedDatabase()
 // }
 
+//GET
 // Start defining your routes here
 // Endpoints with listEndpoints
 app.get("/", (req, res) => {
@@ -206,6 +207,20 @@ app.get("/documentation", (req, res) => {
     </html>
     `)
   
+})
+
+//POST
+app.post("/thoughts", async(req, res) => {
+  const { message, hearts, createdAt } = req.body
+
+  try {
+    const newThought = await new Thought({ message, hearts, createdAt }).save()
+
+    res.status(201).json({ response: newThought })
+
+  } catch (error) {
+    res.status(500).json({ error: "Thought could not be created"})
+  }
 })
 
 // Start the server

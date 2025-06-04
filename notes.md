@@ -7,10 +7,17 @@ W1:
 [x] You should follow the guidelines on how to write clean code.
 
 W2:
-[] Your API should use Mongoose models to model your data and use these models to fetch data from the database.
+[X] Your API should use Mongoose models to model your data and use these models to fetch data from the database.
 [] Your API should validate user input and return appropriate errors if the input is invalid.
 [] You should implement error handling for all your routes, with proper response statuses.
 [] Your frontend should be updated with the possibility to Update and Delete a thought.
+[] Deployed backend with deployed DB
+[] Posibility to: 
+  [] POST 
+  [] PATCH 
+  [] DELETE
+[] Frontend posibility to POST (to your API)
+[] Nice to have: Frontend possibility to edit and delete
 
 W3:
 [] Signup and Login existing Happy Thoughts
