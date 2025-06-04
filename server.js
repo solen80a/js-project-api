@@ -29,6 +29,19 @@ const thoughtSchema = new mongoose.Schema({
   }
 })
 
+const Thought = mongoose.model("Thought", thoughtSchema)
+
+//RESET_DB=true npm run dev. DElete when not needed anymore.
+// if(process.env.RESET_DB){
+//   const seedDatabase = async () => {
+//     await Thought.deleteMany({})
+//     data.forEach(thought => {
+//       new Thought(thought).save()
+//     })
+//   }
+//   seedDatabase()
+// }
+
 // Start defining your routes here
 // Endpoints with listEndpoints
 app.get("/", (req, res) => {
@@ -47,37 +60,48 @@ app.get("/", (req, res) => {
 //   res.json(data)
 // })
 
-//Show all thoughts
+//Endpoint to show all thoughts
 //Filter liked thoughts, thoughts?liked, 
 //Filter thoughts from today thoughts?thoughtsfromtoday
-app.get("/thoughts", (req, res) => {
-  const showLiked = req.query.hasOwnProperty("liked");
-  const showThoughtsFromToday = req.query.hasOwnProperty("thoughtsfromtoday")
+app.get("/thoughts", async(req, res) => {
+
+  //const showLiked = req.query.hasOwnProperty("liked");
+  //const showThoughtsFromToday = req.query.hasOwnProperty("thoughtsfromtoday")
   const today = new Date()
   const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 
-  const { hearts, createdAt } = req.query
+  const { liked, thoughtsfromtoday } = req.query
 
-  let filteredThoughts = data   
-  
-    if (showLiked){
-      filteredThoughts = filteredThoughts.filter(thought => thought.hearts >0) 
-    } 
+  const query = {}  
 
-    if (showThoughtsFromToday){
-      filteredThoughts = filteredThoughts.filter(thought => {
-        const createdAt = new Date(thought.createdAt)
-        const thoughtsDate = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate())
-
-        return thoughtsDate.getTime() === todayDate.getTime()
-      })
-    }  
-
-  if (filteredThoughts.length === 0) {
-    return res.status(404).json({ error: 'There are no thoughts to show' });
+  if (liked){
+    query.hearts = liked
+    filteredThoughts = filteredThoughts.filter(thought => thought.hearts >0)
   }
 
-  res.json(filteredThoughts);
+  if (thoughtsfromtoday){
+    query.createdAt = thoughtsfromtoday
+    filteredThoughts = filteredThoughts.filter(thought => {
+      const createdAt = new Date(thought.createdAt)
+      const thoughtsDate = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate())
+
+      return thoughtsDate.getTime() === todayDate.getTime()
+    }
+  )}
+    
+  try{
+    let filteredThoughts = await Thought.find(query) 
+
+    if (filteredThoughts.length === 0){
+      return res.status(404).json({ error: "There are no thoughts to show" })       
+    } 
+    res.status(200).json({ message: "Success"})   
+
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch thoughts"})
+  } 
+
+  //res.json(filteredThoughts);
 });
 
 //Show all messages !!Is this not relevant? Should maybe be a qury param instead?!!
