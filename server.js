@@ -31,35 +31,37 @@ app.get("/", (req, res) => {
 //   res.json(data)
 // })
 
-//Show all messages
-//Filter liked messages, /messages?liked, 
-//Filter messages from today /messages?messagesfromtoday
-app.get("/messages", (req, res) => {
+//Show all thoughts
+//Filter liked thoughts, thoughts?liked, 
+//Filter thoughts from today thoughts?thoughtsfromtoday
+app.get("/thoughts", (req, res) => {
   const showLiked = req.query.hasOwnProperty("liked");
-  const showMessagesFromToday = req.query.hasOwnProperty("messagesfromtoday")
+  const showThoughtsFromToday = req.query.hasOwnProperty("thoughtsfromtoday")
   const today = new Date()
   const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 
-  let filteredMessages = data   
+  const { hearts, createdAt } = req.query
+
+  let filteredThoughts = data   
   
     if (showLiked){
-      filteredMessages = filteredMessages.filter(message => message.hearts >0) 
+      filteredThoughts = filteredThoughts.filter(thought => thought.hearts >0) 
     } 
 
-    if (showMessagesFromToday){
-      filteredMessages = filteredMessages.filter(message => {
-        const createdAt = new Date(message.createdAt)
-        const messageData = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate())
+    if (showThoughtsFromToday){
+      filteredThoughts = filteredThoughts.filter(thought => {
+        const createdAt = new Date(thought.createdAt)
+        const thoughtsDate = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate())
 
-        return messageData.getTime() === todayDate.getTime()
+        return thoughtsDate.getTime() === todayDate.getTime()
       })
     }  
 
-  if (filteredMessages.length === 0) {
-    return res.status(404).json({ error: 'There are no messages to show' });
+  if (filteredThoughts.length === 0) {
+    return res.status(404).json({ error: 'There are no thoughts to show' });
   }
 
-  res.json(filteredMessages);
+  res.json(filteredThoughts);
 });
 
 //Show all messages !!Is this not relevant? Should maybe be a qury param instead?!!
@@ -67,18 +69,18 @@ app.get("/messages", (req, res) => {
 //   res.json(data.map((item) => item.message))   
 // })
 
-//Show a single message id 
-app.get("/messages/:id", (req, res) => {
+//Show a single thought id 
+app.get("/thoughts/:id", (req, res) => {
 
   // be aware! The id that comes from the param is of type string. and in our json it is of type number. You have to turn them into the same type before you can compare them. trun a string to a number by adding + 👇
-  const messageID = data.find((message) => message._id === req.params.id)
+  const thoughtID = data.find((thought) => thought._id === req.params.id)
 
   // tiny error handling if we get an id that doesnt exist in our data
-  if (!messageID) {
-    return res.status(404).json({ error: 'message not found' })
+  if (!thoughtID) {
+    return res.status(404).json({ error: 'thought not found' })
   }
  
-  res.json(messageID)
+  res.json(thoughtID)
 })
 
 
@@ -114,7 +116,7 @@ app.get("/documentation", (req, res) => {
         <p>This is the documentation of Happy thoughts API.</p>
         <section>
         <h2>Endpoints:</h2>
-        <h3>GET /messages</h3>
+        <h3>GET /thoughts</h3>
         <p>Returns a list of all happy thoughts.</p>
         <h4>Response:</h4>
         <pre><code>
@@ -129,7 +131,7 @@ app.get("/documentation", (req, res) => {
           ...
         ]
         </code></pre>
-        <h3>GET /messages?liked</h3>                
+        <h3>GET /thoughts?liked</h3>                
         <p>Returns a list of all happy thoughts with likes, >0.</p>
         <h4>Response:</h4>
         <pre><code>
@@ -144,7 +146,7 @@ app.get("/documentation", (req, res) => {
           ...
         ]
         </code></pre>
-        <h3>GET /messages?messagesfromtoday</h3>                
+        <h3>GET /thoughts?messagesfromtoday</h3>                
         <p>Returns a list of all happy thoughts from today .</p>
         <h4>Response:</h4>
         <pre><code>
@@ -159,7 +161,7 @@ app.get("/documentation", (req, res) => {
           ...
         ]
         </code></pre> 
-        <h3>GET /messages/:id</h3>
+        <h3>GET /thoughts/:id</h3>
         <p>Returns a specific happy thought by id.</p>
         <h4>Response:</h4>
         <pre><code>

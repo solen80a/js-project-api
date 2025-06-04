@@ -1,10 +1,10 @@
 W1:
-[] Your API should have at least three (for now) routes. Try to push yourself to do more, though!
-  [] The endpoint "/" should return documentation of your API using e.g. Express List Endpoints
-  [] A minimum of one endpoint to return a collection of results (an array of elements).
-  [] A minimum of one endpoint to return a single result (single element).
-[] Your API should be RESTful
-[] You should follow the guidelines on how to write clean code.
+[x] Your API should have at least three (for now) routes. Try to push yourself to do more, though!
+  [x] The endpoint "/" should return documentation of your API using e.g. Express List Endpoints
+  [x] A minimum of one endpoint to return a collection of results (an array of elements).
+  [x] A minimum of one endpoint to return a single result (single element).
+[x] Your API should be RESTful
+[x] You should follow the guidelines on how to write clean code.
 
 W2:
 [] Your API should use Mongoose models to model your data and use these models to fetch data from the database.
