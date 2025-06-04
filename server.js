@@ -1,7 +1,9 @@
 import cors from "cors"
 import express from "express"
-import data from "./data.json"
 import listEndpoints from "express-list-endpoints"
+import mongoose from "mongoose"
+
+import data from "./data.json"
 
 // Defines the port the app will run on. Defaults to 8080, but can be overridden
 // when starting the server. Example command to overwrite PORT env variable value:
