@@ -1,5 +1,5 @@
 import cors from "cors"
-import express from "express"
+import express, { response } from "express"
 import listEndpoints from "express-list-endpoints"
 import mongoose from "mongoose"
 
@@ -65,8 +65,6 @@ app.get("/", (req, res) => {
 //Filter thoughts from today thoughts?thoughtsfromtoday
 app.get("/thoughts", async(req, res) => {
 
-  //const showLiked = req.query.hasOwnProperty("liked");
-  //const showThoughtsFromToday = req.query.hasOwnProperty("thoughtsfromtoday")
   const today = new Date()
   const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
 
@@ -75,18 +73,10 @@ app.get("/thoughts", async(req, res) => {
   const query = {}  
 
   if (liked !== undefined){
-    query.hearts = { $gt: 0 } //greater than 0
-    //filteredThoughts = filteredThoughts.filter(thought => thought.hearts >0)
+    query.hearts = { $gt: 0 } //greater than 0    
   }
 
-  if (thoughtsfromtoday !== undefined){
-    // query.createdAt = thoughtsfromtoday
-    // filteredThoughts = filteredThoughts.filter(thought => {
-    //   const createdAt = new Date(thought.createdAt)
-    //   const thoughtsDate = new Date(createdAt.getFullYear(), createdAt.getMonth(), createdAt.getDate())
-
-    //   return thoughtsDate.getTime() === todayDate.getTime()
-    // })
+  if (thoughtsfromtoday !== undefined){  
     const tomorrowDate = new Date(todayDate);
     tomorrowDate.setDate(todayDate.getDate() + 1);
 
@@ -105,10 +95,8 @@ app.get("/thoughts", async(req, res) => {
     res.status(200).json({ response: filteredThoughts })   
 
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch thoughts"})
-  } 
-
-  //res.json(filteredThoughts);
+    res.status(500).json({ error: "Failed to fetch thoughts"})
+  }    
 });
 
 //Show all messages !!Is this not relevant? Should maybe be a qury param instead?!!
@@ -116,18 +104,30 @@ app.get("/thoughts", async(req, res) => {
 //   res.json(data.map((item) => item.message))   
 // })
 
-//Show a single thought id 
-app.get("/thoughts/:id", (req, res) => {
+//Endpoint to show a single thought id 
+app.get("/thoughts/:id", async (req, res) => {
+  const { id } = req.params
+  try{
+    const thought = await Thought.findById(id)
 
-  // be aware! The id that comes from the param is of type string. and in our json it is of type number. You have to turn them into the same type before you can compare them. trun a string to a number by adding + 👇
-  const thoughtID = data.find((thought) => thought._id === req.params.id)
+    if (!thought){
+      return res.status(404).json({ error: "There is no thought with that id" })
+    }
+    res.status(200).json({ response: thought})
 
-  // tiny error handling if we get an id that doesnt exist in our data
-  if (!thoughtID) {
-    return res.status(404).json({ error: 'thought not found' })
+  } catch (error) {
+    res.status(500).json({ error: "Thoughts not found"})
   }
+
+  // // be aware! The id that comes from the param is of type string. and in our json it is of type number. You have to turn them into the same type before you can compare them. trun a string to a number by adding + 👇
+  // const thoughtID = data.find((thought) => thought._id === req.params.id)
+
+  // // tiny error handling if we get an id that doesnt exist in our data
+  // if (!thoughtID) {
+  //   return res.status(404).json({ error: 'thought not found' })
+  // }
  
-  res.json(thoughtID)
+  // res.json(thoughtID)
 })
 
 
