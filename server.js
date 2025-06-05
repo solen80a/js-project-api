@@ -21,7 +21,11 @@ app.use(cors())
 app.use(express.json())
 
 const thoughtSchema = new mongoose.Schema({
-  message: String,
+  message: {
+    type: String,
+    required: true,
+    minlength: 5
+  },
   hearts: {
     type: Number,
     default: 0
@@ -213,10 +217,10 @@ app.get("/documentation", (req, res) => {
 
 //POST
 app.post("/thoughts", async(req, res) => {
-  const { message, hearts, createdAt } = req.body
+  const { message } = req.body
 
   try {
-    const newThought = await new Thought({ message, hearts, createdAt }).save()
+    const newThought = await new Thought({ message }).save()
 
     res.status(201).json({ response: newThought })
 
@@ -224,6 +228,31 @@ app.post("/thoughts", async(req, res) => {
     res.status(500).json({ error: "Thought could not be created"})
   }
 })
+
+app.post("/thoughts/:id/like", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const newThoughtLike = await Thought.findByIdAndUpdate(
+      id,
+      { $inc: { hearts: 1 } },
+      { new: true } // return the updated document
+    );
+
+    if (!newThoughtLike) {
+      return res.status(404).json({ error: "Thought not found, could not update" });
+    }
+
+    res.status(200).json({ 
+      message: `Thought with message: ${newThoughtLike.message}, was liked.`,
+      hearts: newThoughtLike.hearts,
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch thoughts" });
+  }
+});
+
 
 //DELETE
 app.delete("/thoughts/:id", async(req, res) => {
@@ -244,11 +273,10 @@ app.delete("/thoughts/:id", async(req, res) => {
 //PATCH
 app.patch("/thoughts/:id", async(req, res) => {
   const { id } = req.params
-  const { newThoughtMessage } = req.body
-  const { newThoughtLike } = req.body
+  const { newThoughtMessage } = req.body  
 
   try{
-    const thought = await Thought.findByIdAndUpdate(id, { message: newThoughtMessage }, { hearts: newThoughtLike }, { new: true }, { runValidators: true })
+    const thought = await Thought.findByIdAndUpdate(id, { message: newThoughtMessage }, { new: true }, { runValidators: true })
 
     if(!thought){
       return res.status(404).json({ error: "Thought id was not found, could not update" })
