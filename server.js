@@ -93,7 +93,7 @@ app.get("/thoughts", async(req, res) => {
     if (filteredThoughts.length === 0){
       return res.status(404).json({ error: "There are no thoughts to show" })       
     } 
-    res.status(200).json({ response: filteredThoughts })   
+    res.status(200).json(filteredThoughts)   
 
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch thoughts"})
@@ -242,7 +242,6 @@ app.post("/thoughts/:id/like", async (req, res) => {
     if (!newThoughtLike) {
       return res.status(404).json({ error: "Thought not found, could not update" });
     }
-
     res.status(200).json({ 
       message: `Thought with message: ${newThoughtLike.message}, was liked.`,
       hearts: newThoughtLike.hearts,
