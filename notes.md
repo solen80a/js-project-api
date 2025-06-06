@@ -11,12 +11,14 @@ W2:
 [x] Your API should validate user input and return appropriate errors if the input is invalid.
 [x] You should implement error handling for all your routes, with proper response statuses.
 [] Your frontend should be updated with the possibility to Update and Delete a thought.
+  [] Update
+  [x] Delete
 [] Deployed backend API with deployed DB
 [x] Posibility to: 
   [x] POST 
   [x] PATCH 
   [x] DELETE
-[] Frontend posibility to POST (to your API)
+[x] Frontend posibility to POST (to your API)
 
 W3:
 [] Signup and Login existing Happy Thoughts
