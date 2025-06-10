@@ -283,7 +283,7 @@ app.patch("/thoughts/:id", async(req, res) => {
     if(!thought){
       return res.status(404).json({ error: "Thought id was not found, could not update" })
     }
-    res.status(200).json({ response: thought, message: `Thought was updated to: ${thought}`})
+    res.status(200).json({ response: newThoughtMessage, message: `Thought was updated to: ${newThoughtMessage}`})
 
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch thoughts"})
