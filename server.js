@@ -275,15 +275,15 @@ app.delete("/thoughts/:id", async(req, res) => {
 //PATCH
 app.patch("/thoughts/:id", async(req, res) => {
   const { id } = req.params
-  const { newThoughtMessage } = req.body.message  
+  const { newThoughtMessage } = req.body
 
   try{
-    const thought = await Thought.findByIdAndUpdate(id, { message: newThoughtMessage }, { new: true }, { runValidators: true })
+    const thought = await Thought.findByIdAndUpdate(id, { message: newThoughtMessage }, { new: true , runValidators: true })
 
     if(!thought){
       return res.status(404).json({ error: "Thought id was not found, could not update" })
     }
-    res.status(200).json({ message: `Thought was updated to: ${newThoughtMessage}`})
+    res.status(200).json({ response: thought, message: `Thought was updated to: ${thought}`})
 
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch thoughts"})
