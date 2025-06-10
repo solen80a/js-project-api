@@ -275,7 +275,7 @@ app.delete("/thoughts/:id", async(req, res) => {
 //PATCH
 app.patch("/thoughts/:id", async(req, res) => {
   const { id } = req.params
-  const { newThoughtMessage } = req.body  
+  const { newThoughtMessage } = req.body.message  
 
   try{
     const thought = await Thought.findByIdAndUpdate(id, { message: newThoughtMessage }, { new: true }, { runValidators: true })
