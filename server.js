@@ -1,9 +1,12 @@
 import cors from "cors"
+import dotenv from "dotenv"
 import express, { response } from "express"
 import listEndpoints from "express-list-endpoints"
 import mongoose from "mongoose"
 
 import data from "./data.json"
+
+dotenv.config()
 
 //To connect to the DB
 const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/happy-thoughts"
@@ -280,7 +283,7 @@ app.patch("/thoughts/:id", async(req, res) => {
     if(!thought){
       return res.status(404).json({ error: "Thought id was not found, could not update" })
     }
-    res.status(200).json({ message: `Thought was updated`})
+    res.status(200).json({ message: `Thought was updated to: ${newThoughtMessage}`})
 
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch thoughts"})

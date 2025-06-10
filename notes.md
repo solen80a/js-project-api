@@ -13,7 +13,7 @@ W2:
 [] Your frontend should be updated with the possibility to Update and Delete a thought.
   [] Update
   [x] Delete
-[] Deployed backend API with deployed DB
+[x] Deployed backend API with deployed DB
 [x] Posibility to: 
   [x] POST 
   [x] PATCH 
