@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt"
 import cors from "cors"
 import dotenv from "dotenv"
 import express, { response } from "express"
@@ -5,6 +6,9 @@ import listEndpoints from "express-list-endpoints"
 import mongoose from "mongoose"
 
 import data from "./data.json"
+import { Thought } from "./models/thought"
+import { User } from "./models/user"
+import { postUser } from "./utils/postUser"
 
 dotenv.config()
 
@@ -23,23 +27,34 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-const thoughtSchema = new mongoose.Schema({
-  message: {
-    type: String,
-    required: true,
-    minlength: 5
-  },
-  hearts: {
-    type: Number,
-    default: 0
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
+//Middleware function
+const authenticateUser = async (req, res, next) => {
+  const user = await User.findOne({accessToken: req.header("Authorization")})
+  if(user) {
+    req.user = user
+    next()
+  } else {
+    res.status(401).json({loggedOut: true})
   }
-})
+}
 
-const Thought = mongoose.model("Thought", thoughtSchema)
+// const thoughtSchema = new mongoose.Schema({
+//   message: {
+//     type: String,
+//     required: true,
+//     minlength: 5
+//   },
+//   hearts: {
+//     type: Number,
+//     default: 0
+//   },
+//   createdAt: {
+//     type: Date,
+//     default: Date.now
+//   }
+// })
+
+// const Thought = mongoose.model("Thought", thoughtSchema)
 
 //RESET_DB=true npm run dev. DElete when not needed anymore.
 // if(process.env.RESET_DB){
@@ -91,7 +106,7 @@ app.get("/thoughts", async(req, res) => {
   }
     
   try{
-    const filteredThoughts = await Thought.find(query) 
+    const filteredThoughts = await Thought.find(query).sort({createdAt: "desc"}) 
 
     if (filteredThoughts.length === 0){
       return res.status(404).json({ error: "There are no thoughts to show" })       
@@ -284,10 +299,51 @@ app.patch("/thoughts/:id", async(req, res) => {
     if(!thought){
       return res.status(404).json({ error: "Thought id was not found, could not update" })
     }
-    res.status(200).json({ message: `Thought was updated to: ${thought}`})
+    res.status(200).json({ message: `Thought was updated to: ${newThoughtMessage}`})
 
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch thoughts"})
+  }
+})
+
+app.get("/users", async (req, res) => {
+  const { email } = req.params  
+
+  try {
+    const user = await User.find(email)
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        response: null,
+        message: "No users found"
+      })
+    }
+
+    res.status(200).json({
+      success: true,
+      response: user
+    })
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      response: error,
+      message: "Failed to fetch users"
+    })
+  }
+})
+
+app.post("/users", postUser)
+
+app.get("/secrets", authenticateUser)
+
+app.post("/sessions", async (req, res) => {
+  const user = await User.findOne({email: req.body.email})
+
+  if(user && bcrypt.compareSync(req.body.password, user.password)){
+    res.json({userId: user._id, accessToken: user.accessToken})
+  } else {
+    res.json({notFound: true})
   }
 })
 
