@@ -273,6 +273,7 @@ app.delete("/thoughts/:id", async(req, res) => {
 })
 
 //PATCH
+//Endpoint /thoughts/:id, json body {"newThoughtMessage": "edited message"}
 app.patch("/thoughts/:id", async(req, res) => {
   const { id } = req.params
   const { newThoughtMessage } = req.body
@@ -283,7 +284,7 @@ app.patch("/thoughts/:id", async(req, res) => {
     if(!thought){
       return res.status(404).json({ error: "Thought id was not found, could not update" })
     }
-    res.status(200).json({ response: newThoughtMessage, message: `Thought was updated to: ${newThoughtMessage}`})
+    res.status(200).json({ message: `Thought was updated to: ${thought}`})
 
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch thoughts"})

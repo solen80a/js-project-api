@@ -10,8 +10,8 @@ W2:
 [X] Your API should use Mongoose models to model your data and use these models to fetch data from the database.
 [x] Your API should validate user input and return appropriate errors if the input is invalid.
 [x] You should implement error handling for all your routes, with proper response statuses.
-[] Your frontend should be updated with the possibility to Update and Delete a thought.
-  [] Update
+[x] Your frontend should be updated with the possibility to Update and Delete a thought.
+  [x] Update
   [x] Delete
 [x] Deployed backend API with deployed DB
 [x] Posibility to: 
