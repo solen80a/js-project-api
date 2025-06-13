@@ -6,6 +6,7 @@ import listEndpoints from "express-list-endpoints"
 import mongoose from "mongoose"
 
 import data from "./data.json"
+import { authenticateUser } from "./middleware/authMiddleware"
 import { Thought } from "./models/thought"
 import { User } from "./models/user"
 import { postUser } from "./utils/postUser"
@@ -27,16 +28,16 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-//Middleware function
-const authenticateUser = async (req, res, next) => {
-  const user = await User.findOne({accessToken: req.header("Authorization")})
-  if(user) {
-    req.user = user
-    next()
-  } else {
-    res.status(401).json({loggedOut: true})
-  }
-}
+// //Middleware function
+// const authenticateUser = async (req, res, next) => {
+//   const user = await User.findOne({accessToken: req.header("Authorization")})
+//   if(user) {
+//     req.user = user
+//     next()
+//   } else {
+//     res.status(401).json({loggedOut: true})
+//   }
+// }
 
 // const thoughtSchema = new mongoose.Schema({
 //   message: {
@@ -234,7 +235,7 @@ app.get("/documentation", (req, res) => {
 })
 
 //POST
-app.post("/thoughts", async(req, res) => {
+app.post("/thoughts", authenticateUser, async(req, res) => {
   const { message } = req.body
 
   try {
@@ -242,7 +243,7 @@ app.post("/thoughts", async(req, res) => {
 
     res.status(201).json({ response: newThought })
 
-  } catch (error) {
+  } catch (error) {    
     res.status(500).json({ error: "Thought could not be created"})
   }
 })
@@ -272,7 +273,7 @@ app.post("/thoughts/:id/like", async (req, res) => {
 
 
 //DELETE
-app.delete("/thoughts/:id", async(req, res) => {
+app.delete("/thoughts/:id", authenticateUser, async(req, res) => {
   const { id } = req.params
 
   try{
@@ -289,7 +290,7 @@ app.delete("/thoughts/:id", async(req, res) => {
 
 //PATCH
 //Endpoint /thoughts/:id, json body {"newThoughtMessage": "edited message"}
-app.patch("/thoughts/:id", async(req, res) => {
+app.patch("/thoughts/:id", authenticateUser, async(req, res) => {
   const { id } = req.params
   const { newThoughtMessage } = req.body
 
@@ -337,6 +338,7 @@ app.post("/users", postUser)
 
 app.get("/secrets", authenticateUser)
 
+//Signin endpoint
 app.post("/sessions", async (req, res) => {
   const user = await User.findOne({email: req.body.email})
 

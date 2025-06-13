@@ -24,27 +24,27 @@ W3:
 [] Signup and Login existing Happy Thoughts
 [] Your API should have routes to register and log in
 [] Your endpoints to Create, Update and Delete should be authenticated
-[] Your frontend should have a registration form which POSTs to the API to create a new user.
+[x] Your frontend should have a registration form which POSTs to the API to create a new user.
 [] Your frontend should have a login form to authenticate the user.
-[] Your passwords in the database should be encrypted with bcrypt.
+[x] Your passwords in the database should be encrypted with bcrypt.
 [] You should implement error handling. Your API should let the user know if something went wrong. Be as specific as possible to help the user, e.g. by validating the user input when creating a new user, and return "That email address already exists". Include correct status codes. Error messages should also be shown on the frontend.
-[] The validation should ensure unique email addresses and/or usernames, depending on how you'd like to structure your User model.
+[x] The validation should ensure unique email addresses and/or usernames, depending on how you'd like to structure your User model.
 
 
 Requirements:
 [] Your API must have at least the following routes. Try to push yourself to do more, though! Endpoints for:
-  [] Documentation of your API using e.g. Express List Endpoints
-  [] Reading thoughts
-  [] Reading a single thought
-  [] Liking a thought
-  [] Creating a thought (authenticated)
-  [] Updating a thought (authenticated)
-  [] Deleting a thought (authenticated)
+  [x] Documentation of your API using e.g. Express List Endpoints
+  [x] Reading thoughts
+  [x] Reading a single thought
+  [x] Liking a thought
+  [x] Creating a thought (authenticated)
+  [x] Updating a thought (authenticated)
+  [x] Deleting a thought (authenticated)
   [] Signing up
   [] Logging in 
-[] Your API should be RESTful
+[x] Your API should be RESTful
 [] You should follow the guidelines on how to write clean code
-[] Your API should use Mongoose models to model your data and use these models to fetch data from the database.
+[x] Your API should use Mongoose models to model your data and use these models to fetch data from the database.
 [] Your API should validate user input and return appropriate errors if the input is invalid.
 [] The validation should ensure unique email addresses and/or usernames depending on how you'd like to structure your User model.
 [] You should implement error handling for all your routes, with proper response statuses.

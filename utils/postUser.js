@@ -39,9 +39,18 @@ export const postUser = async (req, res) => {
     const salt = bcrypt.genSaltSync()
     const user = new User({email, password: bcrypt.hashSync(password, salt)})
     user.save()
-    res.status(200).json({userId:user._id, accessToken: user.accessToken})
+    res.status(200).json({
+      success: true,
+      response: email,
+      userId:user._id, 
+      accessToken: user.accessToken
+
+    })
   } catch(error){
-    res.status(400).json({message: "Could not create user", errors: error.errors})
+    res.status(400).json({
+      message: "Could not create user", 
+      errors: error.errors
+    })
   }  
 }
 
