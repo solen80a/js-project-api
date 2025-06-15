@@ -28,35 +28,6 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-// //Middleware function
-// const authenticateUser = async (req, res, next) => {
-//   const user = await User.findOne({accessToken: req.header("Authorization")})
-//   if(user) {
-//     req.user = user
-//     next()
-//   } else {
-//     res.status(401).json({loggedOut: true})
-//   }
-// }
-
-// const thoughtSchema = new mongoose.Schema({
-//   message: {
-//     type: String,
-//     required: true,
-//     minlength: 5
-//   },
-//   hearts: {
-//     type: Number,
-//     default: 0
-//   },
-//   createdAt: {
-//     type: Date,
-//     default: Date.now
-//   }
-// })
-
-// const Thought = mongoose.model("Thought", thoughtSchema)
-
 //RESET_DB=true npm run dev. DElete when not needed anymore.
 // if(process.env.RESET_DB){
 //   const seedDatabase = async () => {
