@@ -78,7 +78,9 @@ app.get("/thoughts", async(req, res) => {
   }
     
   try{
-    const filteredThoughts = await Thought.find(query).sort({createdAt: "desc"}) 
+    const filteredThoughts = await Thought.find(query)
+      .sort({ createdAt: "desc" })
+      .populate("user", "_id") 
 
     if (filteredThoughts.length === 0){
       return res.status(404).json({ error: "There are no thoughts to show" })       
@@ -107,110 +109,15 @@ app.get("/thoughts/:id", async (req, res) => {
  
 })
 
-
-//Nicer documentation including queries
-app.get("/documentation", (req, res) => {
-  res.send(`
-    <html>
-      <head>
-        <title>Happy Thoughts API</title>
-             <style>
-        body {
-          font-family: Arial, sans-serif;
-          padding: 20px;
-          background-color: #f0f8ff;
-         
-        }
-        h1 {
-          color: #2c3e50;
-        }
-        code {
-          background: #eee;
-          padding: 2px 4px;
-          border-radius: 4px;
-        }
-        section {
-          margin-bottom: 20px;        
-        }
-      </style>
-      </head>
-      <body>
-        <h1>Welcome to Happy Thoughts API</h1>
-        
-        <p>This is the documentation of Happy thoughts API.</p>
-        <section>
-        <h2>Endpoints:</h2>
-        <h3>GET /thoughts</h3>
-        <p>Returns a list of all happy thoughts.</p>
-        <h4>Response:</h4>
-        <pre><code>
-        [
-          {
-             "_id": "682c6f0e951f7a0017130022",
-            "message": "Cute monkeys🐒",
-            "hearts": 2,
-            "createdAt": "2025-05-20T12:01:18.308Z",
-            "__v": 0
-          },
-          ...
-        ]
-        </code></pre>
-        <h3>GET /thoughts?liked</h3>                
-        <p>Returns a list of all happy thoughts with likes, >0.</p>
-        <h4>Response:</h4>
-        <pre><code>
-        [
-          {
-             "_id": "682c6f0e951f7a0017130022",
-            "message": "Cute monkeys🐒",
-            "hearts": 2,
-            "createdAt": "2025-05-20T12:01:18.308Z",
-            "__v": 0
-          },
-          ...
-        ]
-        </code></pre>
-        <h3>GET /thoughts?messagesfromtoday</h3>                
-        <p>Returns a list of all happy thoughts from today .</p>
-        <h4>Response:</h4>
-        <pre><code>
-        [
-          {
-             "_id": "682c6f0e951f7a0017130022",
-            "message": "Cute monkeys🐒",
-            "hearts": 2,
-            "createdAt": "2025-05-20T12:01:18.308Z",
-            "__v": 0
-          },
-          ...
-        ]
-        </code></pre> 
-        <h3>GET /thoughts/:id</h3>
-        <p>Returns a specific happy thought by id.</p>
-        <h4>Response:</h4>
-        <pre><code>
-        [
-          {
-             "_id": "682c6f0e951f7a0017130022",
-            "message": "Cute monkeys🐒",
-            "hearts": 2,
-            "createdAt": "2025-05-20T12:01:18.308Z",
-            "__v": 0
-          }
-        ]        
-        </section>
-        
-      </body>
-    </html>
-    `)  
-})
-
 //POST
 app.post("/thoughts", authenticateUser, async(req, res) => {
   const { message } = req.body
 
   try {
-    const newThought = await new Thought({ message }).save()
+    const newThought = await new Thought({ 
+      message,
+      user: req.user._id 
+    }).save()
 
     res.status(201).json({ response: newThought })
 
@@ -253,6 +160,12 @@ app.delete("/thoughts/:id", authenticateUser, async(req, res) => {
     if (!thought) {
       return res.status(404).json({ error: "Thought id was not found, could not deleted" })
     }
+
+    if(!thought.user.equals(req.user._id)){
+      return res.status(403).json({ error: "Not authorized to delete this thought" })
+    }
+
+    await thought.deleteOne()
     res.status(200).json({message: `Thought with message: ${thought.message}, was deleted`})
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch thoughts"})
@@ -270,6 +183,10 @@ app.patch("/thoughts/:id", authenticateUser, async(req, res) => {
 
     if(!thought){
       return res.status(404).json({ error: "Thought id was not found, could not update" })
+    }
+
+    if(!thought.user.equals(req.user._id)) {
+      return res.status(403).json({ error: "Not authorized to edit this thought" })
     }
     res.status(200).json({ message: `Thought was updated to: ${newThoughtMessage}`})
 
