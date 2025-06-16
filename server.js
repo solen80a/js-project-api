@@ -124,7 +124,7 @@ app.post("/thoughts", authenticateUser, async(req, res) => {
   try {
     const newThought = await new Thought({ 
       message,
-      userId: req.user._id 
+      user: req.user._id 
     }).save()
 
     res.status(201).json({ response: newThought })
