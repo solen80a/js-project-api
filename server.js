@@ -163,7 +163,7 @@ app.delete("/thoughts/:id", authenticateUser, async(req, res) => {
   const { id } = req.params
 
   try{
-    //const thought = await Thought.findByIdAndDelete(id)
+    
     const thought = await Thought.findById(id);
 
     if (!thought) {
