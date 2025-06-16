@@ -111,6 +111,10 @@ app.get("/thoughts/:id", async (req, res) => {
 
 //POST
 app.post("/thoughts", authenticateUser, async(req, res) => {
+  if(!req.user) {
+    return res.status(403).json({ error: "You must be logged in to post" })
+  }
+
   const { message } = req.body
 
   try {
