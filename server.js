@@ -111,16 +111,20 @@ app.get("/thoughts/:id", async (req, res) => {
 
 //POST
 app.post("/thoughts", authenticateUser, async(req, res) => {
-  if(!req.user) {
-    return res.status(403).json({ error: "You must be logged in to post" })
+  const { message } = req.body
+
+  if (!message) {
+    return res.status(400).json({ error: "Message is required" });
   }
 
-  const { message } = req.body
+  if(!req.user) {
+    return res.status(403).json({ error: "You must be logged in to post" })
+  }  
 
   try {
     const newThought = await new Thought({ 
       message,
-      user: req.user._id 
+      userId: req.user._id 
     }).save()
 
     res.status(201).json({ response: newThought })
@@ -159,7 +163,8 @@ app.delete("/thoughts/:id", authenticateUser, async(req, res) => {
   const { id } = req.params
 
   try{
-    const thought = await Thought.findByIdAndDelete(id)
+    //const thought = await Thought.findByIdAndDelete(id)
+    const thought = await Thought.findById(id);
 
     if (!thought) {
       return res.status(404).json({ error: "Thought id was not found, could not deleted" })
@@ -183,7 +188,8 @@ app.patch("/thoughts/:id", authenticateUser, async(req, res) => {
   const { newThoughtMessage } = req.body
 
   try{
-    const thought = await Thought.findByIdAndUpdate(id, { message: newThoughtMessage }, { new: true , runValidators: true })
+    //const thought = await Thought.findByIdAndUpdate(id, { message: newThoughtMessage }, { new: true , runValidators: true })
+    const thought = await Thought.findById(id);
 
     if(!thought){
       return res.status(404).json({ error: "Thought id was not found, could not update" })
@@ -192,6 +198,10 @@ app.patch("/thoughts/:id", authenticateUser, async(req, res) => {
     if(!thought.user.equals(req.user._id)) {
       return res.status(403).json({ error: "Not authorized to edit this thought" })
     }
+
+    thought.message = newThoughtMessage;
+    await thought.save();
+
     res.status(200).json({ message: `Thought was updated to: ${newThoughtMessage}`})
 
   } catch (error) {
@@ -228,16 +238,18 @@ app.get("/users", async (req, res) => {
 
 app.post("/users", postUser)
 
-app.get("/secrets", authenticateUser)
+app.get("/secrets", authenticateUser, (req, res) => {
+  res.status(200).json({ message: "This is a protected route", user: req.user })
+})
 
 //Signin endpoint
 app.post("/sessions", async (req, res) => {
   const user = await User.findOne({email: req.body.email})
 
   if(user && bcrypt.compareSync(req.body.password, user.password)){
-    res.json({userId: user._id, accessToken: user.accessToken})
+    res.status(200).json({userId: user._id, accessToken: user.accessToken})
   } else {
-    res.json({notFound: true})
+    res.status(401).json({ error: "Invalid email or password"})
   }
 })
 
