@@ -16,6 +16,13 @@ export const postUser = async (req, res) => {
       });
     }
 
+    if (password.length < 3) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 3 characters long"
+      });
+    }
+
     const salt = bcrypt.genSaltSync()
     const user = new User({email, password: bcrypt.hashSync(password, salt)})
     await user.save()
