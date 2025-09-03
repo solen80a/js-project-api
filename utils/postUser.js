@@ -6,6 +6,16 @@ import { User } from "../models/user";
 export const postUser = async (req, res) => {
   try{
     const { email, password } = req.body
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User already exists"
+      });
+    }
+
     const salt = bcrypt.genSaltSync()
     const user = new User({email, password: bcrypt.hashSync(password, salt)})
     user.save()

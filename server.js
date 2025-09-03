@@ -247,9 +247,9 @@ app.post("/sessions", async (req, res) => {
   const user = await User.findOne({email: req.body.email})
 
   if(user && bcrypt.compareSync(req.body.password, user.password)){
-    res.status(200).json({userId: user._id, accessToken: user.accessToken})
+    res.status(200).json({success: true, userId: user._id, accessToken: user.accessToken})
   } else {
-    res.status(401).json({ error: "Invalid email or password"})
+    res.status(401).json({ success: false, error: "Invalid email or password"})
   }
 })
 
