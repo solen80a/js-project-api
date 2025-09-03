@@ -4,7 +4,8 @@ const thoughtSchema = new mongoose.Schema({
   message: {
     type: String,
     required: true,
-    minlength: 5
+    minlength: 5,
+    maxlength: 140
   },
   hearts: {
     type: Number,

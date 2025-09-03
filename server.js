@@ -28,17 +28,6 @@ const app = express()
 app.use(cors())
 app.use(express.json())
 
-//RESET_DB=true npm run dev. DElete when not needed anymore.
-// if(process.env.RESET_DB){
-//   const seedDatabase = async () => {
-//     await Thought.deleteMany({})
-//     data.forEach(thought => {
-//       new Thought(thought).save()
-//     })
-//   }
-//   seedDatabase()
-// }
-
 //GET
 // Start defining your routes here
 // Endpoints with listEndpoints
@@ -188,7 +177,7 @@ app.patch("/thoughts/:id", authenticateUser, async(req, res) => {
   const { newThoughtMessage } = req.body
 
   try{
-    //const thought = await Thought.findByIdAndUpdate(id, { message: newThoughtMessage }, { new: true , runValidators: true })
+    
     const thought = await Thought.findById(id);
 
     if(!thought){

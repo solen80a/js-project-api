@@ -18,7 +18,7 @@ export const postUser = async (req, res) => {
 
     const salt = bcrypt.genSaltSync()
     const user = new User({email, password: bcrypt.hashSync(password, salt)})
-    user.save()
+    await user.save()
     res.status(200).json({
       success: true,
       response: email,
